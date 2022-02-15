@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "hardhat/console.sol";
 
 /**
  * @title NaiveReceiverLenderPool
@@ -23,9 +24,10 @@ contract NaiveReceiverLenderPool is ReentrancyGuard {
         uint256 balanceBefore = address(this).balance;
         require(balanceBefore >= borrowAmount, "Not enough ETH in pool");
 
-
         require(borrower.isContract(), "Borrower must be a deployed contract");
+        
         // Transfer ETH and handle control to receiver
+        
         borrower.functionCallWithValue(
             abi.encodeWithSignature(
                 "receiveEther(uint256)",

