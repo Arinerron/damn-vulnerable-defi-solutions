@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 import "../DamnValuableTokenSnapshot.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title SimpleGovernance
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
@@ -59,6 +61,7 @@ contract SimpleGovernance {
         GovernanceAction storage actionToExecute = actions[actionId];
         actionToExecute.executedAt = block.timestamp;
 
+        console.log("execution action");
         actionToExecute.receiver.functionCallWithValue(
             actionToExecute.data,
             actionToExecute.weiAmount
@@ -78,6 +81,7 @@ contract SimpleGovernance {
      */
     function _canBeExecuted(uint256 actionId) private view returns (bool) {
         GovernanceAction memory actionToExecute = actions[actionId];
+        console.log("actionToExecute.executedAt == %s, time = %s and %s", actionToExecute.executedAt == 0, block.timestamp, actionToExecute.proposedAt);
         return (
             actionToExecute.executedAt == 0 &&
             (block.timestamp - actionToExecute.proposedAt >= ACTION_DELAY_IN_SECONDS)

