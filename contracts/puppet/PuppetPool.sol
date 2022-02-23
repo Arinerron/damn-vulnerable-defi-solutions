@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "../DamnValuableToken.sol";
+import "hardhat/console.sol";
 
 /**
  * @title PuppetPool
@@ -26,11 +27,13 @@ contract PuppetPool is ReentrancyGuard {
 
     // Allows borrowing `borrowAmount` of tokens by first depositing two times their value in ETH
     function borrow(uint256 borrowAmount) public payable nonReentrant {
+        console.log("msg.value=%s, borrowAmount=%s", msg.value, borrowAmount);
         uint256 depositRequired = calculateDepositRequired(borrowAmount);
         
         require(msg.value >= depositRequired, "Not depositing enough collateral");
         
         if (msg.value > depositRequired) {
+            console.log("%s > %s, sending %s...", msg.value, depositRequired, msg.value - depositRequired);
             payable(msg.sender).sendValue(msg.value - depositRequired);
         }
 

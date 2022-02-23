@@ -1,4 +1,5 @@
 node_modules
+tags
 build
 contracts/attacker-contracts/*.sol
 *.solved.js

