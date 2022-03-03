@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title FreeRiderBuyer
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
@@ -41,9 +43,12 @@ contract FreeRiderBuyer is ReentrancyGuard, IERC721Receiver {
         require(tx.origin == partner);
         require(_tokenId >= 0 && _tokenId <= 5);
         require(nft.ownerOf(_tokenId) == address(this));
+
+        console.log("... onERC721Received -- buyer received NFT!");
         
         received++;
         if(received == 6) {            
+            console.log("... onERC721Received -- sending bounty!");
             payable(partner).sendValue(JOB_PAYOUT);
         }            
 
