@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title ClimberTimelock
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
@@ -50,14 +52,21 @@ contract ClimberTimelock is AccessControl {
 
     function getOperationState(bytes32 id) public view returns (OperationState) {
         Operation memory op = operations[id];
+
+        console.log("getOperationState:");
+        console.logBytes(abi.encodePacked(id));
         
         if(op.executed) {
+            console.log("... executed");
             return OperationState.Executed;
         } else if(op.readyAtTimestamp >= block.timestamp) {
+            console.log("... readyforexecution");
             return OperationState.ReadyForExecution;
         } else if(op.readyAtTimestamp > 0) {
+            console.log("... scheduled");
             return OperationState.Scheduled;
         } else {
+            console.log("... unknown");
             return OperationState.Unknown;
         }
     }
@@ -82,6 +91,7 @@ contract ClimberTimelock is AccessControl {
         require(targets.length == dataElements.length);
 
         bytes32 id = getOperationId(targets, values, dataElements, salt);
+        console.log("from schedule...");
         require(getOperationState(id) == OperationState.Unknown, "Operation already known");
         
         operations[id].readyAtTimestamp = uint64(block.timestamp) + delay;
@@ -105,6 +115,7 @@ contract ClimberTimelock is AccessControl {
             targets[i].functionCallWithValue(dataElements[i], values[i]);
         }
         
+        console.log("from execute...");
         require(getOperationState(id) == OperationState.ReadyForExecution);
         operations[id].executed = true;
     }

