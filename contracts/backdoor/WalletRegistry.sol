@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
 import "@gnosis.pm/safe-contracts/contracts/proxies/IProxyCreationCallback.sol";
 
+import "hardhat/console.sol";
+
 /**
  * @title WalletRegistry
  * @notice A registry for Gnosis Safe wallets.
@@ -64,6 +66,8 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
         bytes calldata initializer,
         uint256
     ) external override {
+        console.log("wtf");
+
         // Make sure we have enough DVT to pay
         require(token.balanceOf(address(this)) >= TOKEN_PAYMENT, "Not enough funds to pay");
 
@@ -81,6 +85,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
         require(GnosisSafe(walletAddress).getOwners().length == MAX_OWNERS, "Invalid number of owners");       
 
         // Ensure the owner is a registered beneficiary
+        console.log("wallet owners length: %", walletAddress);
         address walletOwner = GnosisSafe(walletAddress).getOwners()[0];
 
         require(beneficiaries[walletOwner], "Owner is not registered as beneficiary");
